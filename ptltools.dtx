@@ -1,0 +1,239 @@
+% \iffalse meta-comment
+%
+% Copyright (C) 2020 by Peterlits Zo <peterlitszo@outlook.com>
+% ------------------------------------------------------------
+%
+% This file may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License, either
+% version 1.3 of this license or (at your option) any later
+% version.  The latest version of this license is in:
+%
+%    http://www.latex-project.org/lppl.txt
+%
+% and version 1.3 or later is part of all distributions of
+% LaTeX version 2005/12/01 or later.
+%
+% \fi
+%
+% \iffalse
+%
+%<*driver>
+
+\documentclass{ltxdoc}
+\usepackage{ptltools}
+\usepackage{booktabs}
+\usepackage{hyperref}
+
+\hypersetup{hidelinks}
+
+\newcommand{\ptltools}{{\ttfamily ptltools}}
+
+\EnableCrossrefs
+\CodelineIndex
+\RecordChanges
+
+\begin{document}
+    \makeatletter
+    \DocInput{ptltools.dtx}
+\end{document}
+
+%</driver>
+% \fi
+%
+% \iffalse
+% \CheckSum{0}
+% \CharacterTable
+%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%   Digits        \0\1\2\3\4\5\6\7\8\9
+%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%   Dollar        \$     Percent       \%     Ampersand     \&
+%   Acute accent  \'     Left paren    \(     Right paren   \)
+%   Asterisk      \*     Plus          \+     Comma         \,
+%   Minus         \-     Point         \.     Solidus       \/
+%   Colon         \:     Semicolon     \;     Less than     \<
+%   Equals        \=     Greater than  \>     Question mark \?
+%   Commercial at \@     Left bracket  \[     Backslash     \\
+%   Right bracket \]     Circumflex    \^     Underscore    \_
+%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%   Right brace   \}     Tilde         \~}
+% \fi
+%
+%
+% \changes{v0.0.1}{2020/6/18}{Initial version}
+% \GetFileInfo{ptltools.sty}
+% \DoNotIndex{}
+%
+% \title{the \textsf{ptltools} package\thanks{This doument
+%        corresponds to \textsf{ptltools}~\fileversion,
+%        dated \filedate}}
+% \author{Peterlits Zo \\ \texttt{peterlitszo@outlook.com}}
+%
+%
+% \iffalse --------------------------------------------------------------------
+%          the first page that hold the title and the table of contents
+% --------------------------------------------------------------------------\fi
+%
+% \maketitle
+% \tableofcontents
+% \newpage
+%
+%
+% \iffalse --------------------------------------------------------------------
+%          first of all
+% --------------------------------------------------------------------------\fi
+%
+% \section{First at All}
+%
+% This document is for the package \ptltools, which has a kit of tools to build
+% great document you like: status bars, a to-do boxes, and so on.
+%
+% If you like to add others and you are good at \LaTeX{}-ing, it is a good idea
+% that go to \url{www.github.com/peterlitszo/ptltools} to push your request pull.
+% Or email me by your idea, then I'd like to try to achieve it as my best.
+%
+%
+% \iffalse --------------------------------------------------------------------
+%          Source code
+% --------------------------------------------------------------------------\fi
+%
+% \section{Source code and the more details}
+%
+%
+% \iffalse --------------------------------------------------------------------
+%          the head of the file
+% --------------------------------------------------------------------------\fi
+%
+% \subsection{The Head of the File}
+% 
+% This is the head of \ptltools's package:
+% 
+%    \begin{macrocode}
+\NeedsTeXFormat{LaTeX2e}[2005/12/01]
+\ProvidesPackage{ptltools}
+    [2020/6/18 v0.0.1 a kit of tools, greater than your thinking]
+\RequirePackage{tikz}
+\RequirePackage{ifthen}
+%    \end{macrocode}
+%
+%
+% \iffalse --------------------------------------------------------------------
+%          the todo box
+% --------------------------------------------------------------------------\fi
+%
+% \subsection{The Todo Boxes}
+%
+% \subsubsection{The Lower-Level Todo Boxes}
+% There are four todo boxes for your: empty todo box, doing todo box, ok todobox
+% and error todobox. the lower-level command is showed by the table
+% \ref{raw todo box}.
+%
+% \begin{table}[h]
+%     \centering
+%     \begin{tabular}{cccc}
+%         \toprule
+%         \verb|\usebox\ptl@todo@empty| & \verb|\usebox\ptl@todo@doing| \\
+%         \usebox\ptl@todo@empty        & \usebox\ptl@todo@doing        \\
+%         \midrule
+%         \verb|\usebox\ptl@todo@ok|    & \verb|\usebox\ptl@todo@error| \\
+%         \usebox\ptl@todo@ok           & \usebox\ptl@todo@error        \\
+%         \bottomrule
+%     \end{tabular}
+%     \caption{The pictures of raw to-do boxes}
+%     \label{raw todo box}
+% \end{table}
+% 
+%    \begin{macrocode}
+\newsavebox{\ptl@todo@empty}
+\newsavebox{\ptl@todo@doing}
+\newsavebox{\ptl@todo@ok}
+\newsavebox{\ptl@todo@error}
+
+\newlength{\p@b}
+\setlength{\p@b}{0.9ex}
+
+\newcommand{\ptl@todo@inital}{
+    \savebox{\ptl@todo@empty}{%
+        \tikz{
+            \path[use as bounding box] (0, 0) rectangle (3\p@b, 2\p@b);
+            \draw (0,0) rectangle (2\p@b,2\p@b);
+        }%
+    }
+    \savebox{\ptl@todo@doing}{%
+        \tikz{
+            \path[use as bounding box] (0, 0) rectangle (3\p@b, 2\p@b);
+            \draw (1.5\p@b,2\p@b) -- (0,2\p@b) -- (0,0) -- (2\p@b,0)
+                  -- (2\p@b,0.5\p@b);
+            \draw (0.75\p@b,1.25\p@b) -- (1.5\p@b,0.5\p@b) -- (3\p@b,2\p@b);
+            \draw (1.75\p@b,1.75\p@b) -- (2.75\p@b,0.75\p@b);
+        }%
+    }
+    \savebox{\ptl@todo@ok}{%
+        \tikz{
+            \path[use as bounding box] (0, 0) rectangle (3\p@b, 2\p@b);
+            \draw (2\p@b,1.5\p@b) -- (2\p@b,2\p@b) -- (0,2\p@b) -- (0,0)
+                  -- (2\p@b,0) -- (2\p@b,0.5\p@b);
+            \draw (0.75\p@b,1.25\p@b) -- (1.5\p@b,0.5\p@b) -- (3\p@b,2\p@b);
+        }%
+    }
+    \savebox{\ptl@todo@error}{%
+        \tikz{
+            \path[use as bounding box] (0, 0) rectangle (3\p@b, 2\p@b);
+            \draw (0,0) rectangle (2\p@b,2\p@b);
+            \draw (1\p@b, 0.5\p@b) -- (1\p@b,0.75\p@b)
+                  .. controls (1\p@b,1\p@b) and (1.5\p@b,1\p@b) ..
+                      (1.5\p@b,1.2\p@b)
+                  .. controls (1.5\p@b,1.75\p@b) and (1.25\p@b,1.75\p@b) ..
+                      (1\p@b,1.75\p@b)
+                  .. controls (0.75\p@b,1.75\p@b) and (0.5\p@b,1.75\p@b) ..
+                      (0.5\p@b,1.2\p@b);
+            \fill (1\p@b,0.25\p@b) circle [radius=0.1\p@b];
+        }%
+    }
+}
+
+\ptl@todo@inital
+%    \end{macrocode}
+%
+%
+% \subsubsection{The Higher-Level Boxes}
+%
+% It is a good idea to use commands like \verb|\ptltodo[ ]| but not the
+% lower-level commands. Because those commands are more readable than
+% these lower-level commands.
+% 
+% Look at table \ref{user todo box} for more infomations.
+%
+% \begin{table}[h]
+%     \centering
+%     \begin{tabular}{cccc}
+%         \toprule
+%         \verb|\ptltodo[ ]|  & \verb|\ptltodo[x]|      \\
+%         \ptltodo[ ]         & \ptltodo[x]             \\
+%         \midrule
+%         \verb|\ptltodo[v]|  & \verb|\ptltodo[others]| \\
+%         \ptltodo[v]         & \ptltodo[others]        \\
+%         \bottomrule
+%     \end{tabular}
+%     \caption{The pictures of to-do boxes for user}
+%     \label{user todo box}
+% \end{table}
+% 
+%    \begin{macrocode}
+\def\ptltodo[#1]{%
+    \ifthenelse{\equal{#1}{\space}}{%
+        \usebox\ptl@todo@empty%
+    }{\ifthenelse{\equal{#1}{x}}{%
+        \usebox\ptl@todo@doing%
+    }{\ifthenelse{\equal{#1}{v}}{%
+        \usebox\ptl@todo@ok%
+    }{%
+        \usebox\ptl@todo@error%
+    }}}%
+}
+%    \end{macrocode}
+%
+% \Finale
+\endinput
+
+

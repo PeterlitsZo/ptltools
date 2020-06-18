@@ -1,0 +1,10 @@
+# the origin class file
+peterlitsdoc.cls
+
+*.aux
+*.glo
+*.idx
+*.log
+*.out
+*.toc
+*.sty
