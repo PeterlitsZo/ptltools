@@ -19,14 +19,25 @@
 %
 %<*driver>
 
-\documentclass{ltxdoc}
+\documentclass[a4paper]{ltxdoc}
 \usepackage{ptltools}
-\usepackage{booktabs}
-\usepackage{hyperref}
+
+\usepackage{booktabs, hyperref, enumitem, xcolor}
 
 \hypersetup{hidelinks}
 
 \newcommand{\ptltools}{{\ttfamily ptltools}}
+
+\def\verbcolor{\color{white!50!black!70!blue}}
+\def\theCodelineNo{\relax
+    \verbcolor%
+    {\sffamily\tiny\arabic{CodelineNo}}%
+}
+\def\MacroFont{\relax
+    \verbcolor%
+    \ttfamily\small%
+}
+\setlength\MacroIndent{\parindent}
 
 \EnableCrossrefs
 \CodelineIndex
@@ -60,28 +71,35 @@
 % \fi
 %
 %
-% \changes{v0.0.1}{2020/6/18}{Initial version}
+% \changes{v0.0.1}{\the\year/\the\month/\the\date}{Initial version}
 % \GetFileInfo{ptltools.sty}
-% \DoNotIndex{}
 %
-% \title{the \textsf{ptltools} package\thanks{This doument
-%        corresponds to \textsf{ptltools}~\fileversion,
-%        dated \filedate}}
-% \author{Peterlits Zo \\ \texttt{peterlitszo@outlook.com}}
+% \DoNotIndex{\day,\def,\draw,\equal,\fill,\ifthenelse,\month,\NeedsTeXFormat}
+% \DoNotIndex{\newcommand,\newlength,\newsavebox,\path,\ProvidesPackage}
+% \DoNotIndex{\RequirePackage,\savebox,\setlength,\space,\the,\tikz,\usebox}
+% \DoNotIndex{\year}
+%
+% \title{%
+%     the \ptltools\ package%
+%     \thanks{This doument corresponds to \ptltools~\fileversion,
+%     dated \filedate}
+% }
+% \author{%
+%     Peterlits Zo\thanks{Email: \texttt{< peterlitszo@outlook.com >}}
+% }
 %
 %
-% \iffalse --------------------------------------------------------------------
-%          the first page that hold the title and the table of contents
-% --------------------------------------------------------------------------\fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % \maketitle
 % \tableofcontents
 % \newpage
 %
 %
-% \iffalse --------------------------------------------------------------------
-%          first of all
-% --------------------------------------------------------------------------\fi
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % \section{First at All}
 %
@@ -93,38 +111,41 @@
 % Or email me by your idea, then I'd like to try to achieve it as my best.
 %
 %
-% \iffalse --------------------------------------------------------------------
-%          Source code
-% --------------------------------------------------------------------------\fi
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % \section{Source code and the more details}
 %
-%
-% \iffalse --------------------------------------------------------------------
-%          the head of the file
-% --------------------------------------------------------------------------\fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % \subsection{The Head of the File}
 % 
 % This is the head of \ptltools's package:
-% 
+%
 %    \begin{macrocode}
 \NeedsTeXFormat{LaTeX2e}[2005/12/01]
 \ProvidesPackage{ptltools}
-    [2020/6/18 v0.0.1 a kit of tools, greater than your thinking]
+    [\the\year/\the\month/\the\day{}
+     v0.0.1
+     a kit of tools, greater than your thinking]
 \RequirePackage{tikz}
 \RequirePackage{ifthen}
 %    \end{macrocode}
 %
 %
-% \iffalse --------------------------------------------------------------------
-%          the todo box
-% --------------------------------------------------------------------------\fi
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % \subsection{The Todo Boxes}
 %
 % \subsubsection{The Lower-Level Todo Boxes}
-% There are four todo boxes for your: empty todo box, doing todo box, ok todobox
+%
+% \begin{macro}{\ptl@todo@empty}
+% \begin{macro}{\ptl@todo@doing}
+% \begin{macro}{\ptl@todo@ok}
+% \begin{macro}{\ptl@todo@error}
+%
+% There are four todo boxes for you: empty todo box, doing todo box, ok todobox
 % and error todobox. the lower-level command is showed by the table
 % \ref{raw todo box}.
 %
@@ -132,10 +153,10 @@
 %     \centering
 %     \begin{tabular}{cccc}
 %         \toprule
-%         \verb|\usebox\ptl@todo@empty| & \verb|\usebox\ptl@todo@doing| \\
+%         |\usebox\ptl@todo@empty| & |\usebox\ptl@todo@doing| \\
 %         \usebox\ptl@todo@empty        & \usebox\ptl@todo@doing        \\
 %         \midrule
-%         \verb|\usebox\ptl@todo@ok|    & \verb|\usebox\ptl@todo@error| \\
+%         |\usebox\ptl@todo@ok|    & |\usebox\ptl@todo@error| \\
 %         \usebox\ptl@todo@ok           & \usebox\ptl@todo@error        \\
 %         \bottomrule
 %     \end{tabular}
@@ -143,22 +164,55 @@
 %     \label{raw todo box}
 % \end{table}
 % 
+% Those commands declare four base raw todo boxes:
+%
 %    \begin{macrocode}
 \newsavebox{\ptl@todo@empty}
 \newsavebox{\ptl@todo@doing}
 \newsavebox{\ptl@todo@ok}
 \newsavebox{\ptl@todo@error}
-
-\newlength{\p@b}
-\setlength{\p@b}{0.9ex}
-
+%    \end{macrocode}
+%
+% \begin{macro}{\ptl@todo@baselength}
+%
+% Those boxes are based on the length -- |\ptl@todo@baselength|, and
+% all the boxes have the size $2$|\ptl@todo@baselength|$\times$%
+% $3$|\ptl@todo@baselength|:
+%
+%    \begin{macrocode}
+\newlength{\ptl@todo@baselength}
+\setlength{\ptl@todo@baselength}{0.9ex}
+%    \end{macrocode}
+%
+% \end{macro}
+%
+% \begin{macro}{\ptl@todo@inital}
+%
+% The next part defines command |\ptl@todo@inital| to inital all boxes
+% register by TikZ boxes.
+%
+%    \begin{macrocode}
 \newcommand{\ptl@todo@inital}{
+    \def\p@b{\ptl@todo@baselength}
+%    \end{macrocode}
+%
+% \begin{enumerate}[wide=0pt]
+% \item (In the definition of |\ptl@todo@inital|) This will make box
+% |\ptl@todo@empty| have the value of ``\ptltodo[ ]''.
+%
+%    \begin{macrocode}
     \savebox{\ptl@todo@empty}{%
         \tikz{
             \path[use as bounding box] (0, 0) rectangle (3\p@b, 2\p@b);
             \draw (0,0) rectangle (2\p@b,2\p@b);
         }%
     }
+%    \end{macrocode}
+%
+% \item (In the definition of |\ptl@todo@inital|) This will make box
+% |\ptl@todo@doing| have the value of ``\ptltodo[x]''.
+%
+%    \begin{macrocode}
     \savebox{\ptl@todo@doing}{%
         \tikz{
             \path[use as bounding box] (0, 0) rectangle (3\p@b, 2\p@b);
@@ -168,6 +222,12 @@
             \draw (1.75\p@b,1.75\p@b) -- (2.75\p@b,0.75\p@b);
         }%
     }
+%    \end{macrocode}
+%
+% \item (In the definition of |\ptl@todo@inital|) This will make box
+% |\ptl@todo@ok| have the value of ``\ptltodo[v]''.
+%
+%    \begin{macrocode}
     \savebox{\ptl@todo@ok}{%
         \tikz{
             \path[use as bounding box] (0, 0) rectangle (3\p@b, 2\p@b);
@@ -176,6 +236,12 @@
             \draw (0.75\p@b,1.25\p@b) -- (1.5\p@b,0.5\p@b) -- (3\p@b,2\p@b);
         }%
     }
+%    \end{macrocode}
+%
+% \item (In the definition of |\ptl@todo@inital|) This will make box
+% |\pt@todo@error| have the value of ``\ptltodo[others]''.
+%
+%    \begin{macrocode}
     \savebox{\ptl@todo@error}{%
         \tikz{
             \path[use as bounding box] (0, 0) rectangle (3\p@b, 2\p@b);
@@ -190,16 +256,29 @@
             \fill (1\p@b,0.25\p@b) circle [radius=0.1\p@b];
         }%
     }
+%    \end{macrocode}
+%
+% \end{enumerate}
+% End of its definition.
+%
+%    \begin{macrocode}
 }
-
 \ptl@todo@inital
 %    \end{macrocode}
+%
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
 %
 %
 % \subsubsection{The Higher-Level Boxes}
 %
-% It is a good idea to use commands like \verb|\ptltodo[ ]| but not the
-% lower-level commands. Because those commands are more readable than
+% \begin{macro}{\ptltodo}
+%
+% It is a good idea to use commands like |\ptltodo| \oarg{character} but not
+% the lower-level commands. Because those commands are more readable than
 % these lower-level commands.
 % 
 % Look at table \ref{user todo box} for more infomations.
@@ -208,10 +287,10 @@
 %     \centering
 %     \begin{tabular}{cccc}
 %         \toprule
-%         \verb|\ptltodo[ ]|  & \verb|\ptltodo[x]|      \\
+%         |\ptltodo[ ]|  & |\ptltodo[x]|      \\
 %         \ptltodo[ ]         & \ptltodo[x]             \\
 %         \midrule
-%         \verb|\ptltodo[v]|  & \verb|\ptltodo[others]| \\
+%         |\ptltodo[v]|  & |\ptltodo[others]| \\
 %         \ptltodo[v]         & \ptltodo[others]        \\
 %         \bottomrule
 %     \end{tabular}
@@ -233,7 +312,18 @@
 }
 %    \end{macrocode}
 %
+% \end{macro}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% \newpage
+%
+% \PrintChanges
+% \PrintIndex
+%
 % \Finale
+%
 \endinput
 
 

@@ -8,3 +8,6 @@ peterlitsdoc.cls
 *.out
 *.toc
 *.sty
+*.gls
+*.ilg
+*.ind
